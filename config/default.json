@@ -1,0 +1,4 @@
+{
+  "mongoURI": "mongodb+srv://testing:testing321@testing0-ijluh.mongodb.net/test?retryWrites=true",
+  "jwtSecret": "sUp3rSeCeTt0k3n"
+}
