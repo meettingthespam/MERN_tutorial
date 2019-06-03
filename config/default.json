@@ -1,4 +1,6 @@
 {
   "mongoURI": "mongodb+srv://testing:testing321@testing0-ijluh.mongodb.net/test?retryWrites=true",
-  "jwtSecret": "sUp3rSeCeTt0k3n"
+  "jwtSecret": "sUp3rSeCeTt0k3n",
+  "github_client_id": "87f47b1c275e5ed81338",
+  "github_client_secret": "ac63355f64bf35ce53af376f04ddc028e78daa5c"
 }

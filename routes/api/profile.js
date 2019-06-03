@@ -1,10 +1,13 @@
-const express = require("express");
+// request and config needed for API call to Github
 const request = require("request");
 const config = require("config");
+
+const express = require("express");
 const router = express.Router();
 const authorization = require("../../middleware/authorization.js");
 const { check, validationResult } = require("express-validator/check");
-const ProfileModel = require("../../models/ProfileModel");
+const ProfileModel = require("../../models/ProfileModel.js");
+const UsersModel = require("../../models/UsersModel.js");
 
 // @route               GET api/profile/me
 // @ description        Get current users profile
@@ -280,4 +283,128 @@ router.delete(
   }
 );
 
+// @route               PUT api/profile/education
+// @description         Add profile education
+// @access              Private
+router.put(
+  "/education",
+  [
+    authorization,
+    [
+      check("school", "School is required")
+        .not()
+        .isEmpty(),
+      check("fieldofstudy", "What was studied is required")
+        .not()
+        .isEmpty()
+    ]
+  ],
+  async (request, response) => {
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) {
+      return response.status(400).json({ errors: errors.array() });
+    }
+
+    const {
+      school,
+      degree,
+      fieldofstudy,
+      from,
+      to,
+      current,
+      description
+    } = request.body;
+
+    const newEducation = {
+      school,
+      degree,
+      fieldofstudy,
+      from,
+      to,
+      current,
+      description
+    };
+    try {
+      const profile = await ProfileModel.findOne({ user: request.user.id });
+
+      // adding the new education
+      profile.education.unshift(newEducation);
+      await profile.save();
+      response.json(profile);
+    } catch (error) {
+      console.error(error.message);
+      response.status(500).send("Server Error _ Profile 8");
+    }
+  }
+);
+
+// @route               DELETE api/profile/experience/:experience_id
+// @description         Delete profile experience
+// @access              Private
+router.delete(
+  "/education/:education_id",
+  authorization,
+  async (request, response) => {
+    try {
+      const profile = await ProfileModel.findOne({ user: request.user.id });
+
+      // getting remove index (to remove correct education)
+      const removeIndex = profile.education
+        .map(item => item.id)
+        .indexOf(request.params.education_id);
+
+      profile.education.splice(removeIndex, 1);
+
+      await profile.save();
+
+      response.json(profile);
+    } catch (error) {
+      console.error(error.message);
+      response.status(500).send("Server Error _ Profile 9");
+    }
+  }
+);
+
+// REFACTOR THIS: SOME REASON (I THINK DUE TO THE MULTIPLE REQUEST/RESPONSE PARAMETERS
+// THIS WASN'T WORKING SO THIS IS LITERALLY BRAD'S CODE)
+
+// @route    GET api/profile/github/:username
+// @desc     Get user repos from Github
+// @access   Public
+router.get("/github/:username", (req, res) => {
+  try {
+    // "options" for github API call
+    // only grabbing 5 repos per page
+    // sorting from date created (newest to oldest)
+    // verifying it by the client id and client secret
+    // for the api call (github_client_id in config/default.json)
+
+    const options = {
+      uri: `https://api.github.com/users/${
+        req.params.username
+      }/repos?per_page=5&sort=created:asc&client_id=${config.get(
+        "github_client_id"
+      )}&client_secret=${config.get("github_client_secret")}`,
+      method: "GET",
+      headers: { "user-agent": "node.js" }
+    };
+    // request takes those options and pushes it
+
+    request(options, (error, response, body) => {
+      if (error) console.error(error);
+      // keeping it simple, if the log fails,
+      // then just sending a 404
+      if (response.statusCode !== 200) {
+        return res.status(404).json({ msg: "No Github profile found" });
+      }
+      // if no errors, then passing data
+      // parsing the json so it's formatted easier
+
+      res.json(JSON.parse(body));
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+});
 module.exports = router;

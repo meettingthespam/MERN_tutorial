@@ -25,6 +25,8 @@ app.use("/api/inventory", require("./routes/api/inventory"));
 app.use("/api/profile", require("./routes/api/profile"));
 app.use("/api/recipes", require("./routes/api/recipes"));
 app.use("/api/users", require("./routes/api/users"));
+app.use("/api/admin", require("./routes/api/admin"));
+app.use("/api/generic_posts", require("./routes/api/generic_posts"));
 
 // making the port based on the actual server's
 // real PORT or defaulting to port 5000
