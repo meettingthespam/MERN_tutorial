@@ -31,7 +31,15 @@ router.post(
     check(
       "password",
       "Please enter a password with 10 or more characters"
-    ).isLength({ min: 10 })
+    ).isLength({ min: 10 }),
+    check("secret_key", "Please enter the secret key").custom(
+      (value, { request }) => {
+        if (value !== config.get("SECRET_CODE_TO_REGISTER")) {
+          throw new Error("Nope, dude");
+        }
+        return true;
+      }
+    )
   ],
 
   // to use .findOne() with mongoose, this whole thing needs to be

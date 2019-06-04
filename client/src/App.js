@@ -1,26 +1,22 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Fragment } from "react";
+import "./App.css";
+import Navbar from "./components/Navbar.js";
+import Landing from "./components/Landing.js";
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Fragment>
+      <h1 className="blue_color">App</h1>
+      <h1 className="black_color">App</h1>
+      <h1 className="gray_color">App</h1>
+      <h1 className="white_color">App</h1>
+      <h1 className="orange_color">App</h1>
+      <h1 className="red_color">App</h1>
+      <h1 className="green_color">App</h1>
+      <Navbar />
+      <Landing />
+    </Fragment>
   );
-}
+};
 
 export default App;

@@ -24,6 +24,10 @@ const UserSchema = new mongoose.Schema({
   avatar: {
     type: String
   },
+  secret_key: {
+    type: String,
+    required: true
+  },
   date: {
     type: Date,
     default: Date.now
